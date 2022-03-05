@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "noImplicitAny": false,
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["es2016", "esnext.asynciterable"],
+    "sourceMap": false,
+    "baseUrl": "src/",
+    "noEmit": true
+  }
+}
