@@ -1,16 +1,14 @@
-import commander from 'commander'
-import { DotenvParseOutput } from 'dotenv'
-import { createClient } from 'contentful-management'
+import commander from 'commander';
+import { DotenvParseOutput } from 'dotenv';
+import { createClient } from 'contentful-management';
 
-import { Environment } from 'contentful-management/dist/typings/entities/environment'
-import inquirer from 'inquirer'
+import { Environment } from 'contentful-management/dist/typings/entities/environment';
+import inquirer from 'inquirer';
 
-import { deleteEnvironment } from './shared/scripts'
+import { deleteEnvironment } from './shared/scripts';
+import { Config } from './shared/types';
 
-const deleteCLI = (
-  program: commander.Command,
-  environmentVariables: DotenvParseOutput,
-) => {
+const deleteCLI = (program: commander.Command, configuration: Config) => {
   program
     .command('delete')
     .description(
@@ -20,50 +18,50 @@ const deleteCLI = (
     .requiredOption(
       '-mt --management-token <TOKEN>',
       'contentful management token',
-      environmentVariables.CONTENTFUL_MANAGEMENT_TOKEN,
+      configuration.managementToken,
     )
     .requiredOption(
       '-s --space-id <SPACE_ID>',
       'contentful space id',
-      environmentVariables.CONTENTFUL_SPACE_ID,
+      configuration.spaceId,
     )
     .action((options) => {
-      const ENVIRONMENT_INPUT = options.environmentId
-      const CMA_ACCESS_TOKEN = options.managementToken
-      const SPACE_ID = options.spaceId
+      const ENVIRONMENT_INPUT = options.environmentId;
+      const CMA_ACCESS_TOKEN = options.managementToken;
+      const SPACE_ID = options.spaceId;
 
       if (ENVIRONMENT_INPUT == 'master') {
-        console.error("forbidden: cannot delete environment 'master'")
-        process.exit(1)
+        console.error("forbidden: cannot delete environment 'master'");
+        process.exit(1);
       }
 
       const client = createClient({
         accessToken: CMA_ACCESS_TOKEN,
-      })
+      });
       const deleteEnv = async () => {
-        let environment: Environment | undefined
+        let environment: Environment | undefined;
 
-        const space = await client.getSpace(SPACE_ID)
+        const space = await client.getSpace(SPACE_ID);
         if (ENVIRONMENT_INPUT) {
           try {
-            space.getEnvironments()
-            environment = await space.getEnvironment(ENVIRONMENT_INPUT)
+            space.getEnvironments();
+            environment = await space.getEnvironment(ENVIRONMENT_INPUT);
           } catch (e) {
             console.error(
               `error: Environment '${ENVIRONMENT_INPUT}' does not exist on space '${space.name}'`,
-            )
-            process.exit(1)
+            );
+            process.exit(1);
           }
 
-          console.log(`Deleting ${ENVIRONMENT_INPUT}...\n`)
-          await deleteEnvironment(space, environment.sys.id)
-          return
+          console.log(`Deleting ${ENVIRONMENT_INPUT}...\n`);
+          await deleteEnvironment(space, environment.sys.id);
+          return;
         } else {
-          const environments = await space.getEnvironments()
+          const environments = await space.getEnvironments();
 
           const environmentNames = environments.items
             .map((env) => env.name)
-            .filter((envName) => !envName.includes('main-', 0))
+            .filter((envName) => !envName.includes('main-', 0));
 
           try {
             const { delEnvironment, confirmed } = await inquirer.prompt([
@@ -78,23 +76,23 @@ const deleteCLI = (
                 name: 'confirmed',
                 message: `Are you sure?`,
               },
-            ])
+            ]);
 
             if (confirmed) {
-              await deleteEnvironment(space, delEnvironment)
-              return
+              await deleteEnvironment(space, delEnvironment);
+              return;
             } else {
-              console.log('\nDeletion aborted!\n')
-              process.exit(0)
+              console.log('\nDeletion aborted!\n');
+              process.exit(0);
             }
           } catch (e) {
-            console.error(e)
+            console.error(e);
           }
         }
-      }
+      };
 
-      deleteEnv()
-    })
-}
+      deleteEnv();
+    });
+};
 
-export default deleteCLI
+export default deleteCLI;

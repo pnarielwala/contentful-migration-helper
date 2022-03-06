@@ -5,6 +5,7 @@ import { readdirSync } from 'fs';
 import path from 'path';
 import { runMigration, RunMigrationConfig } from 'contentful-migration';
 import { version } from 'commander';
+import { Config } from './types';
 
 export const getVersionOfFile = (file: string) =>
   file.replace(/(\d+)(.*)\.(ts|js)/, '$1');
@@ -142,11 +143,7 @@ export const configureEnvironment = async (
 export const getMigrationsToRun = async (
   environment: Environment,
   defaultLocale: string | undefined,
-  dir: string,
-  environmentVariables: {
-    CMA_ACCESS_TOKEN: string;
-    SPACE_ID: string;
-  },
+  config: Config,
 ): Promise<{
   migrationFiles: Array<string>;
   migrationsToRun: Array<string>;
@@ -155,7 +152,8 @@ export const getMigrationsToRun = async (
 }> => {
   // ---------------------------------------------------------------------------
   console.group('\nGet migration version info');
-  const migrationFiles = readdirSync(dir).filter((file) =>
+
+  const migrationFiles = readdirSync(config.migrationDirectory).filter((file) =>
     /^\d+?\..*\.(ts|js)$/.test(file),
   );
   const availableMigrations = migrationFiles
@@ -185,9 +183,9 @@ export const getMigrationsToRun = async (
     versions = items;
   } catch (e) {
     const migrationOptions = {
-      spaceId: environmentVariables.SPACE_ID,
+      spaceId: config.spaceId,
       environmentId: environment.sys.id,
-      accessToken: environmentVariables.CMA_ACCESS_TOKEN,
+      accessToken: config.managementToken,
       yes: true,
     };
 
@@ -196,6 +194,7 @@ export const getMigrationsToRun = async (
       ...migrationOptions,
       filePath,
     });
+
     await environment
       .createEntry('versionTracking', {
         fields: {
@@ -249,19 +248,35 @@ export const getMigrationsToRun = async (
   };
 };
 
-export const runMigrations = async (
-  environment: Environment,
-  migrationsToRun: Array<string>,
-  migrationFiles: Array<string>,
-  storedVersionEntry: Entry,
-  defaultLocale: string | undefined,
-  options: Omit<RunMigrationConfig, 'filePath'>,
-) => {
+export const runMigrations = async (args: {
+  environment: Environment;
+  migrationsToRun: Array<string>;
+  migrationFiles: Array<string>;
+  storedVersionEntry: Entry;
+  defaultLocale: string | undefined;
+  options: Omit<RunMigrationConfig, 'filePath'>;
+  config: Config;
+}) => {
+  const {
+    environment,
+    migrationFiles,
+    migrationsToRun,
+    defaultLocale,
+    options,
+    config,
+  } = args;
+
+  let storedVersionEntry = args.storedVersionEntry;
+
   console.group('\nRunning migrations tasks...');
   for (let migrationToRun of migrationsToRun) {
     const fileName = getFileOfVersion(migrationToRun, migrationFiles);
     if (!fileName) return;
-    const filePath = path.resolve(process.cwd(), 'src/migrations', fileName);
+    const filePath = path.resolve(
+      process.cwd(),
+      config.migrationDirectory,
+      fileName,
+    );
     console.group(`Running migration script '${fileName}'...`);
     try {
       const successfulMigration = await runMigration({ ...options, filePath });

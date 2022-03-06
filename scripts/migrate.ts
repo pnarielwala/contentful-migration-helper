@@ -1,8 +1,5 @@
 import commander from 'commander';
-import { DotenvParseOutput } from 'dotenv';
 import { createClient } from 'contentful-management';
-
-import path from 'path';
 
 import { Environment } from 'contentful-management/dist/typings/entities/environment';
 
@@ -12,13 +9,9 @@ import {
   configureEnvironment,
   getMigrationsToRun,
 } from './shared/scripts';
+import { Config } from './shared/types';
 
-const MIGRATIONS_DIR = path.resolve(process.cwd(), 'src/migrations');
-
-const migrationCLI = (
-  program: commander.Command,
-  environmentVariables: DotenvParseOutput,
-) => {
+const migrationCLI = (program: commander.Command, configuration: Config) => {
   program
     .command('migrate')
     .description(
@@ -28,12 +21,12 @@ const migrationCLI = (
     .requiredOption(
       '-mt --management-token <TOKEN>',
       'contentful management token',
-      environmentVariables.CONTENTFUL_MANAGEMENT_TOKEN,
+      configuration.managementToken,
     )
     .requiredOption(
       '-s --space-id <SPACE_ID>',
       'contentful space id',
-      environmentVariables.CONTENTFUL_SPACE_ID,
+      configuration.spaceId,
     )
     .option(
       '--skip',
@@ -42,22 +35,26 @@ const migrationCLI = (
     )
     .action((options) => {
       const ENVIRONMENT_INPUT = options.environmentId;
-      const CMA_ACCESS_TOKEN = options.managementToken;
-      const SPACE_ID = options.spaceId;
       const skipConfirmation = options.skip;
 
+      const config: Config = {
+        spaceId: options.spaceId,
+        managementToken: options.managementToken,
+        migrationDirectory: configuration.migrationDirectory,
+      };
+
       const client = createClient({
-        accessToken: CMA_ACCESS_TOKEN,
+        accessToken: config.managementToken,
       });
 
       const migrate = async () => {
         let environment: Environment | undefined;
 
-        const space = await client.getSpace(SPACE_ID);
+        const space = await client.getSpace(config.spaceId);
         console.group('\nRunning with the following configuration:');
         console.log(`ENVIRONMENT_INPUT: ${ENVIRONMENT_INPUT}`);
-        console.log(`CMA_ACCESS_TOKEN: ${CMA_ACCESS_TOKEN}`);
-        console.log(`SPACE_ID: ${SPACE_ID}`);
+        console.log(`CMA_ACCESS_TOKEN: ${config.managementToken}`);
+        console.log(`SPACE_ID: ${config.spaceId}`);
         console.groupEnd();
 
         environment = await cloneEnvironment(space, ENVIRONMENT_INPUT);
@@ -72,30 +69,28 @@ const migrationCLI = (
         const migrations = await getMigrationsToRun(
           environment,
           defaultLocale,
-          MIGRATIONS_DIR,
-          {
-            SPACE_ID,
-            CMA_ACCESS_TOKEN,
-          },
+          config,
         );
         const { migrationsToRun, migrationFiles } = migrations;
         let { storedVersionEntry } = migrations;
 
         if (migrationsToRun.length !== 0) {
           const migrationOptions = {
-            spaceId: SPACE_ID,
+            spaceId: config.spaceId,
             environmentId: environment.sys.id,
-            accessToken: CMA_ACCESS_TOKEN,
+            accessToken: config.managementToken,
             yes: skipConfirmation,
           };
-          await runMigrations(
+
+          await runMigrations({
             environment,
             migrationsToRun,
             migrationFiles,
             storedVersionEntry,
             defaultLocale,
-            migrationOptions,
-          );
+            options: migrationOptions,
+            config,
+          });
 
           console.log('All done!');
         } else {

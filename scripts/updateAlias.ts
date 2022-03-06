@@ -1,5 +1,4 @@
 import commander from 'commander';
-import { DotenvParseOutput } from 'dotenv';
 import { createClient } from 'contentful-management';
 
 import path from 'path';
@@ -10,13 +9,9 @@ import {
   deleteEnvironment,
 } from './shared/scripts';
 import { Environment } from 'contentful-management/dist/typings/entities/environment';
+import { Config } from './shared/types';
 
-const MIGRATIONS_DIR = path.resolve(__dirname, '../src/migrations');
-
-const updateAliasCLI = (
-  program: commander.Command,
-  environmentVariables: DotenvParseOutput,
-) => {
+const updateAliasCLI = (program: commander.Command, configuration: Config) => {
   program
     .command('update-alias')
     .description('Updates the main alias to point to the input environment')
@@ -24,12 +19,12 @@ const updateAliasCLI = (
     .requiredOption(
       '-mt --management-token <TOKEN>',
       'contentful management token',
-      environmentVariables.CONTENTFUL_MANAGEMENT_TOKEN,
+      configuration.managementToken,
     )
     .requiredOption(
       '-s --space-id <SPACE_ID>',
       'contentful space id',
-      environmentVariables.CONTENTFUL_SPACE_ID,
+      configuration.spaceId,
     )
     .option(
       '--remove-unchanged',
@@ -37,9 +32,13 @@ const updateAliasCLI = (
     )
     .action((options) => {
       const ENVIRONMENT_INPUT = options.environmentId;
-      const CMA_ACCESS_TOKEN = options.managementToken;
-      const SPACE_ID = options.spaceId;
       const removeEnv = options.removeUnchanged;
+
+      const config: Config = {
+        spaceId: options.spaceId,
+        managementToken: options.managementToken,
+        migrationDirectory: configuration.migrationDirectory,
+      };
 
       if (ENVIRONMENT_INPUT.indexOf('main-') != 0) {
         console.error("error: environment id must begin with 'main-'");
@@ -47,11 +46,11 @@ const updateAliasCLI = (
       }
 
       const client = createClient({
-        accessToken: CMA_ACCESS_TOKEN,
+        accessToken: config.managementToken,
       });
 
       const changeMainAlias = async () => {
-        const space = await client.getSpace(SPACE_ID);
+        const space = await client.getSpace(config.spaceId);
 
         try {
           const environment = await space.getEnvironment(ENVIRONMENT_INPUT);
@@ -61,20 +60,13 @@ const updateAliasCLI = (
           const { currentVersionString } = await getMigrationsToRun(
             environment,
             'en-US',
-            MIGRATIONS_DIR,
-            {
-              SPACE_ID,
-              CMA_ACCESS_TOKEN,
-            },
+            config,
           );
 
           console.log('\nEnvironment: master');
           const {
             currentVersionString: currentVersionStringOnMain,
-          } = await getMigrationsToRun(mainEnv, 'en-US', MIGRATIONS_DIR, {
-            SPACE_ID,
-            CMA_ACCESS_TOKEN,
-          });
+          } = await getMigrationsToRun(mainEnv, 'en-US', config);
 
           if (+currentVersionString > +currentVersionStringOnMain) {
             console.log(

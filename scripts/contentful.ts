@@ -1,24 +1,35 @@
-import { createCommand } from 'commander'
-import { config } from 'dotenv'
+import { createCommand } from 'commander';
 
-import addMigrationCLI from './migrate'
-import addUpdateAliasCLI from './updateAlias'
-import addDeleteCLI from './delete'
-import addExportCLI from './export'
-import addImportCLI from './import'
-import addTemplateCLI from './create-template'
+import loadConfig from './shared/loadConfig';
+import validateConfig from './shared/validateConfig';
 
-const ENV = config().parsed ?? {}
+import addMigrationCLI from './migrate';
+import addUpdateAliasCLI from './updateAlias';
+import addDeleteCLI from './delete';
+import addExportCLI from './export';
+import addImportCLI from './import';
+// import addTemplateCLI from './create-template';
+import { Config } from './shared/types';
 
-const program = createCommand()
+const program = createCommand();
 
-program.name('yarn contentful').usage('[command] [options]')
+program.name('yarn contentful').usage('[command] [options]');
 
-addTemplateCLI(program)
-addMigrationCLI(program, ENV)
-addUpdateAliasCLI(program, ENV)
-addDeleteCLI(program, ENV)
-addExportCLI(program, ENV)
-addImportCLI(program, ENV)
+loadConfig().then(({ config }) => {
+  const valid = validateConfig(config);
 
-program.parse(process.argv)
+  if (!valid) {
+    process.exit(1);
+  }
+
+  const parsedConfig = config as Config;
+
+  // addTemplateCLI(program);
+  addMigrationCLI(program, parsedConfig);
+  addUpdateAliasCLI(program, parsedConfig);
+  addDeleteCLI(program, parsedConfig);
+  addExportCLI(program, parsedConfig);
+  addImportCLI(program, parsedConfig);
+
+  program.parse(process.argv);
+});
