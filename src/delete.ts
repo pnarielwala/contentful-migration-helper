@@ -1,36 +1,36 @@
-import commander from 'commander';
-import { DotenvParseOutput } from 'dotenv';
-import { createClient } from 'contentful-management';
+import commander from "commander";
+import { DotenvParseOutput } from "dotenv";
+import { createClient } from "contentful-management";
 
-import { Environment } from 'contentful-management/dist/typings/entities/environment';
-import inquirer from 'inquirer';
+import { Environment } from "contentful-management/dist/typings/entities/environment";
+import inquirer from "inquirer";
 
-import { deleteEnvironment } from './shared/scripts';
-import { Config } from './shared/types';
+import { deleteEnvironment } from "./shared/scripts";
+import { Config } from "./shared/types";
 
 const deleteCLI = (program: commander.Command, configuration: Config) => {
   program
-    .command('delete')
+    .command("delete")
     .description(
-      'Deletes environments from the specified workspace (will NOT delete the main environment)',
+      "Deletes environments from the specified workspace (will NOT delete the main environment)"
     )
-    .option('-e --environment-id <id>', 'environment id')
+    .option("-e --environment-id <id>", "environment id")
     .requiredOption(
-      '-mt --management-token <TOKEN>',
-      'contentful management token',
-      configuration.managementToken,
+      "-mt --management-token <TOKEN>",
+      "contentful management token",
+      configuration.managementToken
     )
     .requiredOption(
-      '-s --space-id <SPACE_ID>',
-      'contentful space id',
-      configuration.spaceId,
+      "-s --space-id <SPACE_ID>",
+      "contentful space id",
+      configuration.spaceId
     )
     .action((options) => {
       const ENVIRONMENT_INPUT = options.environmentId;
       const CMA_ACCESS_TOKEN = options.managementToken;
       const SPACE_ID = options.spaceId;
 
-      if (ENVIRONMENT_INPUT == 'master') {
+      if (ENVIRONMENT_INPUT == "master") {
         console.error("forbidden: cannot delete environment 'master'");
         process.exit(1);
       }
@@ -48,7 +48,7 @@ const deleteCLI = (program: commander.Command, configuration: Config) => {
             environment = await space.getEnvironment(ENVIRONMENT_INPUT);
           } catch (e) {
             console.error(
-              `error: Environment '${ENVIRONMENT_INPUT}' does not exist on space '${space.name}'`,
+              `error: Environment '${ENVIRONMENT_INPUT}' does not exist on space '${space.name}'`
             );
             process.exit(1);
           }
@@ -61,19 +61,19 @@ const deleteCLI = (program: commander.Command, configuration: Config) => {
 
           const environmentNames = environments.items
             .map((env) => env.name)
-            .filter((envName) => !envName.includes('main-', 0));
+            .filter((envName) => !envName.includes("main-", 0));
 
           try {
             const { delEnvironment, confirmed } = await inquirer.prompt([
               {
-                type: 'list',
-                name: 'delEnvironment',
+                type: "list",
+                name: "delEnvironment",
                 message: `Which environment do you want to delete?`,
                 choices: environmentNames,
               },
               {
-                type: 'confirm',
-                name: 'confirmed',
+                type: "confirm",
+                name: "confirmed",
                 message: `Are you sure?`,
               },
             ]);
@@ -82,7 +82,7 @@ const deleteCLI = (program: commander.Command, configuration: Config) => {
               await deleteEnvironment(space, delEnvironment);
               return;
             } else {
-              console.log('\nDeletion aborted!\n');
+              console.log("\nDeletion aborted!\n");
               process.exit(0);
             }
           } catch (e) {

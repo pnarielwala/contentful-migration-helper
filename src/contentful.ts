@@ -1,19 +1,21 @@
-import { createCommand } from 'commander';
+#!/usr/bin/env node
 
-import loadConfig from './shared/loadConfig';
-import validateConfig from './shared/validateConfig';
+import { createCommand } from "commander";
 
-import addMigrationCLI from './migrate';
-import addUpdateAliasCLI from './updateAlias';
-import addDeleteCLI from './delete';
-import addExportCLI from './export';
-import addImportCLI from './import';
+import loadConfig from "./shared/loadConfig";
+import validateConfig from "./shared/validateConfig";
+
+import addMigrationCLI from "./migrate";
+import addUpdateAliasCLI from "./updateAlias";
+import addDeleteCLI from "./delete";
+import addExportCLI from "./export";
+import addImportCLI from "./import";
 // import addTemplateCLI from './create-template';
-import { Config } from './shared/types';
+import { Config } from "./shared/types";
 
 const program = createCommand();
 
-program.name('yarn contentful').usage('[command] [options]');
+program.name("yarn contentful").usage("[command] [options]");
 
 loadConfig().then(({ config }) => {
   const valid = validateConfig(config);

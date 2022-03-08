@@ -1,23 +1,23 @@
-import { lilconfig } from 'lilconfig';
+import { lilconfig } from "lilconfig";
 
 export const dynamicImport = (path: string) =>
   import(path).then((module) => module.default);
 
 const jsonParse = (path: any, content: any) => JSON.parse(content);
 const searchPlaces = [
-  'package.json',
-  '.contentfulmigrationtoolrc',
-  '.contentfulmigrationtoolrc.json',
-  '.contentfulmigrationtoolrc.js',
-  'contentful-migration-tool.config.js',
+  "package.json",
+  ".contentfulmigrationtoolrc",
+  ".contentfulmigrationtoolrc.json",
+  ".contentfulmigrationtoolrc.js",
+  "contentful-migration-tool.config.js",
 ];
 const loaders = {
-  '.js': dynamicImport,
-  '.json': jsonParse,
+  ".js": dynamicImport,
+  ".json": jsonParse,
 };
 
 export const loadConfig = async () => {
-  const explorer = lilconfig('contentfulmigrationtool', {
+  const explorer = lilconfig("contentfulmigrationtool", {
     searchPlaces,
     loaders,
   });

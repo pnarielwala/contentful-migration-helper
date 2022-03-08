@@ -1,37 +1,37 @@
-import commander from 'commander';
-import { createClient } from 'contentful-management';
+import commander from "commander";
+import { createClient } from "contentful-management";
 
-import { Environment } from 'contentful-management/dist/typings/entities/environment';
+import { Environment } from "contentful-management/dist/typings/entities/environment";
 
 import {
   runMigrations,
   cloneEnvironment,
   configureEnvironment,
   getMigrationsToRun,
-} from './shared/scripts';
-import { Config } from './shared/types';
+} from "./shared/scripts";
+import { Config } from "./shared/types";
 
 const migrationCLI = (program: commander.Command, configuration: Config) => {
   program
-    .command('migrate')
+    .command("migrate")
     .description(
-      'Runs migration scripts against an environment cloned from main',
+      "Runs migration scripts against an environment cloned from main"
     )
-    .requiredOption('-e --environment-id <id>', 'environment id')
+    .requiredOption("-e --environment-id <id>", "environment id")
     .requiredOption(
-      '-mt --management-token <TOKEN>',
-      'contentful management token',
-      configuration.managementToken,
+      "-mt --management-token <TOKEN>",
+      "contentful management token",
+      configuration.managementToken
     )
     .requiredOption(
-      '-s --space-id <SPACE_ID>',
-      'contentful space id',
-      configuration.spaceId,
+      "-s --space-id <SPACE_ID>",
+      "contentful space id",
+      configuration.spaceId
     )
     .option(
-      '--skip',
-      'skips confirmation prompts before executing the migration scripts',
-      false,
+      "--skip",
+      "skips confirmation prompts before executing the migration scripts",
+      false
     )
     .action((options) => {
       const ENVIRONMENT_INPUT = options.environmentId;
@@ -51,7 +51,7 @@ const migrationCLI = (program: commander.Command, configuration: Config) => {
         let environment: Environment | undefined;
 
         const space = await client.getSpace(config.spaceId);
-        console.group('\nRunning with the following configuration:');
+        console.group("\nRunning with the following configuration:");
         console.log(`ENVIRONMENT_INPUT: ${ENVIRONMENT_INPUT}`);
         console.log(`CMA_ACCESS_TOKEN: ${config.managementToken}`);
         console.log(`SPACE_ID: ${config.spaceId}`);
@@ -63,13 +63,13 @@ const migrationCLI = (program: commander.Command, configuration: Config) => {
 
         const { defaultLocale } = await configureEnvironment(
           space,
-          environment,
+          environment
         );
 
         const migrations = await getMigrationsToRun(
           environment,
           defaultLocale,
-          config,
+          config
         );
         const { migrationsToRun, migrationFiles } = migrations;
         let { storedVersionEntry } = migrations;
@@ -92,9 +92,9 @@ const migrationCLI = (program: commander.Command, configuration: Config) => {
             config,
           });
 
-          console.log('All done!');
+          console.log("All done!");
         } else {
-          console.log('No migrations to run!');
+          console.log("No migrations to run!");
         }
       };
 
