@@ -20,7 +20,7 @@
     "watch": "parcel watch",
     "build": "parcel build",
     "contentful": "NODE_PATH=./src ts-node src/contentful.ts",
-    "test": "env-cmd jest --runInBand"
+    "test": "jest --watch"
   },
   "husky": {
     "hooks": {

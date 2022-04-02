@@ -2,13 +2,16 @@ import commander from "commander";
 import { createClient } from "contentful-management";
 
 import { Environment } from "contentful-management/dist/typings/entities/environment";
+import { cloneEnvironment } from "shared/cloneEnvironment";
+import { configureEnvironment } from "shared/configureEnvironment";
+import { getMigrationsToRun } from "shared/getMigrationsToRun";
+import { runMigrations } from "shared/runMigrations";
 
-import {
-  runMigrations,
-  cloneEnvironment,
-  configureEnvironment,
-  getMigrationsToRun,
-} from "./shared/scripts";
+import // runMigrations,
+// cloneEnvironment,
+// configureEnvironment,
+// getMigrationsToRun,
+"./shared/scripts";
 import { Config } from "./shared/types";
 
 const migrationCLI = (program: commander.Command, configuration: Config) => {
@@ -57,22 +60,24 @@ const migrationCLI = (program: commander.Command, configuration: Config) => {
         console.log(`SPACE_ID: ${config.spaceId}`);
         console.groupEnd();
 
-        environment = await cloneEnvironment(space, ENVIRONMENT_INPUT);
+        environment = await cloneEnvironment({
+          space,
+          environmentId: ENVIRONMENT_INPUT,
+        });
 
         if (!environment) return;
 
-        const { defaultLocale } = await configureEnvironment(
+        const { defaultLocale } = await configureEnvironment({
           space,
-          environment
-        );
+          environment,
+        });
 
-        const migrations = await getMigrationsToRun(
+        const migrations = await getMigrationsToRun({
           environment,
           defaultLocale,
-          config
-        );
-        const { migrationsToRun, migrationFiles } = migrations;
-        let { storedVersionEntry } = migrations;
+          config,
+        });
+        const { migrationsToRun, versionEntry } = migrations;
 
         if (migrationsToRun.length !== 0) {
           const migrationOptions = {
@@ -83,10 +88,8 @@ const migrationCLI = (program: commander.Command, configuration: Config) => {
           };
 
           await runMigrations({
-            environment,
             migrationsToRun,
-            migrationFiles,
-            storedVersionEntry,
+            versionEntry,
             defaultLocale,
             options: migrationOptions,
             config,
