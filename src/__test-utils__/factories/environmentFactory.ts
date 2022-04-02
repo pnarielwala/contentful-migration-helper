@@ -81,3 +81,14 @@ export const anEnvironment = (
   ...baseEnvironment,
   ...overrideProps,
 });
+
+export const anEnvironmentWithId = (
+  environmentId?: string,
+  overrideProps?: Partial<Environment>
+): Environment => ({
+  ...anEnvironment(overrideProps),
+  sys: {
+    ...anEnvironment(overrideProps).sys,
+    id: environmentId || baseEnvironment.sys.id,
+  },
+});
