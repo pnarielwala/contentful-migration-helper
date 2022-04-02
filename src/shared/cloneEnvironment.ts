@@ -1,6 +1,5 @@
 import { Environment, Space } from "contentful-management";
 import { deleteEnvironment } from "./deleteEnvironment";
-import { getStringDate } from "./helpers";
 
 export const cloneEnvironment = async (options: {
   space: Space;
@@ -33,6 +32,7 @@ export const cloneEnvironment = async (options: {
           if (status === "ready") {
             process.stdout.write(`done!\n`);
           } else {
+            successful = false;
             process.stdout.write("failure! Unable to process environment.\n");
           }
           break;

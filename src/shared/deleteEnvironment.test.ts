@@ -3,15 +3,18 @@ import { anEnvironment } from "__test-utils__/factories/environmentFactory";
 import { aSpace } from "__test-utils__/factories/spaceFactory";
 import { deleteEnvironment } from "./deleteEnvironment";
 
-beforeEach(() => {
-  jest.spyOn(console, "log").mockImplementation(() => {});
-  jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+beforeAll(() => {
   jest
     .spyOn(process, "exit")
     .mockImplementation((code?: number) => ({} as never));
 });
 
-test("if environment does not exist", async () => {
+beforeEach(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {});
+  jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+});
+
+test("error when deleting a non-existent environment", async () => {
   const environmentId = "not-existing-environment";
   const mockGetEnvironment = jest.fn(() => Promise.reject());
   const space: Space = aSpace({
@@ -29,7 +32,7 @@ test("if environment does not exist", async () => {
   expect(console.log).toHaveBeenCalledWith(`Environment could not be found`);
 });
 
-test("logging if environment does not exist", async () => {
+test("logging error when deleting a non-existent environment", async () => {
   const environmentId = "not-existing-environment";
   const mockGetEnvironment = jest.fn(() => Promise.reject());
   const space: Space = aSpace({
@@ -70,7 +73,7 @@ test("successfully deleting environment", async () => {
   expect(mockDelete).toHaveBeenCalled();
 });
 
-test("error when deleting environment", async () => {
+test("error when deleting non master environment", async () => {
   const environmentId = "non-master";
   const mockDelete = jest.fn(() => Promise.reject());
   const environment = anEnvironment({ delete: mockDelete });
