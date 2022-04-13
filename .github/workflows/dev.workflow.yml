@@ -1,9 +1,10 @@
-name: Main workflow
+name: Development workflow
 
 on:
   push:
     branches:
-      - 'main'
+      - '**'
+      - '!main'
 
 jobs:
   setup:
@@ -67,18 +68,3 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
       - name: Build bundle
         run: yarn build
-  publish:
-    name: Publish version
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@main
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 'lts/*'
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-      - name: Publish
-        run: yarn semantic-release --debug
