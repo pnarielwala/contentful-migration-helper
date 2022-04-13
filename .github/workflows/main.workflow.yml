@@ -1,0 +1,50 @@
+name: Production workflow
+
+on:
+  - push
+
+jobs:
+  setup:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install
+  typecheck:
+    name: Run Typescript typecheck
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+      - name: Run tsc
+        run: yarn tsc
+  test:
+    name: Run unit tests
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+      - name: Run unit tests
+        run: yarn jest --coverage=false --detectOpenHandles --forceExit

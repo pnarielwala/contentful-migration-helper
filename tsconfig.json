@@ -7,7 +7,7 @@
     "noImplicitAny": false,
     "strict": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["es2016", "esnext.asynciterable"],
+    "lib": ["es2018", "esnext.asynciterable", "DOM"],
     "sourceMap": false,
     "baseUrl": "src/",
     "noEmit": true
