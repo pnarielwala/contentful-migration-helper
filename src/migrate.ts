@@ -2,16 +2,11 @@ import commander from "commander";
 import { createClient } from "contentful-management";
 
 import { Environment } from "contentful-management/dist/typings/entities/environment";
-import { cloneEnvironment } from "shared/cloneEnvironment";
-import { configureEnvironment } from "shared/configureEnvironment";
-import { getMigrationsToRun } from "shared/getMigrationsToRun";
-import { runMigrations } from "shared/runMigrations";
+import { cloneEnvironment } from "./shared/cloneEnvironment";
+import { configureEnvironment } from "./shared/configureEnvironment";
+import { getMigrationsToRun } from "./shared/getMigrationsToRun";
+import { runMigrations } from "./shared/runMigrations";
 
-import // runMigrations,
-// cloneEnvironment,
-// configureEnvironment,
-// getMigrationsToRun,
-"./shared/scripts";
 import { Config } from "./shared/types";
 
 const migrationCLI = (program: commander.Command, configuration: Config) => {
