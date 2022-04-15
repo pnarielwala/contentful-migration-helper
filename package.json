@@ -1,5 +1,5 @@
 {
-  "name": "contentful-migration-tool",
+  "name": "contentful-migration-helper",
   "version": "0.1.0",
   "source": "src/contentful.ts",
   "main": "dist/main.js",
