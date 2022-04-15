@@ -63,9 +63,7 @@ jobs:
           node-version: 'lts/*'
       - uses: actions/cache@v2
         with:
-          path: |
-            ./node_modules
-            ./dist
+          path: '**/*(node_modules|dist)'
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
       - name: Build bundle
         run: yarn build
@@ -80,9 +78,7 @@ jobs:
           node-version: 'lts/*'
       - uses: actions/cache@v2
         with:
-          path: |
-            ./node_modules
-            ./dist
+          path: '**/*(node_modules|dist)'
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
       - name: Publish
         env:
