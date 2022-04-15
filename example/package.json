@@ -7,7 +7,7 @@
     "contentful-migrations": "ts-node ./node_modules/.bin/contentful-migration-tool"
   },
   "dependencies": {
-    "contentful-migration-helper": "^0.1.0",
+    "contentful-migration-helper": "latest",
     "ts-node": "^10.7.0"
   }
 }

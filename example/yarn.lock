@@ -582,10 +582,10 @@ contentful-management@^7.3.1, contentful-management@^7.51.5:
     lodash.isplainobject "^4.0.6"
     type-fest "^2.5.3"
 
-contentful-migration-helper@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/contentful-migration-helper/-/contentful-migration-helper-0.1.0.tgz#650f827f6e22c812e4757fffcb1cc6b6d38ad00d"
-  integrity sha512-C3ljjEM75uTlbUpEAFm3G3kYrA2qtv6ed2R00OCkeP/D4rtL8CxtaA4LwZ1tQlg2QVSu8GqLiKL5DSTFSq2L4g==
+contentful-migration-helper@latest:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/contentful-migration-helper/-/contentful-migration-helper-1.0.1.tgz#8e64fe73cc79d71fcf83e0c39275ea249fd06c1e"
+  integrity sha512-A1mq1VyrUsYFD5IkSsqBkM5AlVGpGhI4JplrQlconxJbVB4Y6lOhQzW0sYQoHMHeAVFbfafSRI3VAUVgsQprsg==
   dependencies:
     commander "5.1.0"
     contentful-export "7.12.26"
