@@ -10,7 +10,7 @@
     }
   },
   "bin": {
-    "contentful-migration-tool": "./dist/main.js"
+    "contentful-migration-helper": "./dist/main.js"
   },
   "files": [
     "dist"
