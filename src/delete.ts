@@ -3,7 +3,7 @@ import { createClient } from "contentful-management";
 
 import { Environment } from "contentful-management/dist/typings/entities/environment";
 import inquirer from "inquirer";
-import { deleteEnvironment } from "shared/deleteEnvironment";
+import { deleteEnvironment } from "./shared/deleteEnvironment";
 
 import { Config } from "./shared/types";
 

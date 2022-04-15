@@ -2,9 +2,9 @@ import commander from "commander";
 import { createClient } from "contentful-management";
 
 import { Environment } from "contentful-management/dist/typings/entities/environment";
-import { deleteEnvironment } from "shared/deleteEnvironment";
-import { getMigrationsToRun } from "shared/getMigrationsToRun";
-import { updateAlias } from "shared/updateAlias";
+import { deleteEnvironment } from "./shared/deleteEnvironment";
+import { getMigrationsToRun } from "./shared/getMigrationsToRun";
+import { updateAlias } from "./shared/updateAlias";
 import { Config } from "./shared/types";
 
 const updateAliasCLI = (program: commander.Command, configuration: Config) => {
