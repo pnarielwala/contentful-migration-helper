@@ -1,7 +1,6 @@
 import commander from "commander";
-import { DotenvParseOutput } from "dotenv";
 
-import fs, { readdirSync, readFile, statSync } from "fs";
+import { readdirSync, statSync } from "fs";
 import inquirer from "inquirer";
 import path from "path";
 

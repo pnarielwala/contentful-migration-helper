@@ -4,9 +4,7 @@ import { aSpace } from "__test-utils__/factories/spaceFactory";
 import { deleteEnvironment } from "./deleteEnvironment";
 
 beforeAll(() => {
-  jest
-    .spyOn(process, "exit")
-    .mockImplementation((code?: number) => ({} as never));
+  jest.spyOn(process, "exit").mockImplementation(() => ({} as never));
 });
 
 beforeEach(() => {
@@ -44,7 +42,7 @@ test("logging error when deleting a non-existent environment", async () => {
     ignoreFailures: true,
   };
 
-  const result = await deleteEnvironment(options);
+  await deleteEnvironment(options);
 
   expect(console.log).not.toHaveBeenCalledWith(
     `Environment could not be found`

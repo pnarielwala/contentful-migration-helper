@@ -1,8 +1,6 @@
 import commander from "commander";
 import { createClient } from "contentful-management";
 
-import path from "path";
-
 import {
   getMigrationsToRun,
   updateMainAlias,

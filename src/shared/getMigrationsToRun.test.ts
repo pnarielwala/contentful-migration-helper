@@ -9,9 +9,7 @@ jest.mock("fs");
 jest.mock("./initializeVersionEntry");
 
 beforeAll(() => {
-  jest
-    .spyOn(process, "exit")
-    .mockImplementation((code?: number) => ({} as never));
+  jest.spyOn(process, "exit").mockImplementation(() => ({} as never));
 });
 
 beforeEach(() => {

@@ -1,5 +1,4 @@
 import commander from "commander";
-import { DotenvParseOutput } from "dotenv";
 
 import contentfulExport from "contentful-export";
 import path from "path";

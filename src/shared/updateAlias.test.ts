@@ -3,9 +3,7 @@ import { aSpace } from "__test-utils__/factories/spaceFactory";
 import { updateAlias } from "./updateAlias";
 
 beforeAll(() => {
-  jest
-    .spyOn(process, "exit")
-    .mockImplementation((code?: number) => ({} as never));
+  jest.spyOn(process, "exit").mockImplementation(() => ({} as never));
 });
 
 beforeEach(() => {

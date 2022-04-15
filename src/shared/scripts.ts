@@ -4,7 +4,6 @@ import { Entry } from "contentful-management/dist/typings/entities/entry";
 import { readdirSync } from "fs";
 import path from "path";
 import { runMigration, RunMigrationConfig } from "contentful-migration";
-import { version } from "commander";
 import { Config } from "./types";
 
 import versionMigration from "./createVersionModel";
@@ -259,7 +258,6 @@ export const runMigrations = async (args: {
   config: Config;
 }) => {
   const {
-    environment,
     migrationFiles,
     migrationsToRun,
     defaultLocale,

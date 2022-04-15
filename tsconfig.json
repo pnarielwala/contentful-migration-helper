@@ -10,6 +10,8 @@
     "lib": ["es2018", "esnext.asynciterable", "DOM"],
     "sourceMap": false,
     "baseUrl": "src/",
-    "noEmit": true
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   }
 }

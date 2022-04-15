@@ -24,9 +24,6 @@
     "prepare": "husky install",
     "semantic-release": "semantic-release"
   },
-  "lint-staged": {
-    "{scripts,src}/**/*": "prettier --write"
-  },
   "dependencies": {
     "commander": "5.1.0",
     "contentful-export": "7.12.26",

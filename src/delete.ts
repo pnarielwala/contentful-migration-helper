@@ -1,5 +1,4 @@
 import commander from "commander";
-import { DotenvParseOutput } from "dotenv";
 import { createClient } from "contentful-management";
 
 import { Environment } from "contentful-management/dist/typings/entities/environment";

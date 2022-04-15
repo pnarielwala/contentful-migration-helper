@@ -8,9 +8,7 @@ import { cloneEnvironment } from "./cloneEnvironment";
 jest.mock("./deleteEnvironment");
 
 beforeAll(() => {
-  jest
-    .spyOn(process, "exit")
-    .mockImplementation((code?: number) => ({} as never));
+  jest.spyOn(process, "exit").mockImplementation(() => ({} as never));
 });
 
 beforeEach(() => {

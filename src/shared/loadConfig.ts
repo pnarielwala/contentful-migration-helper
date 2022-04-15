@@ -3,7 +3,7 @@ import { lilconfig } from "lilconfig";
 export const dynamicImport = (path: string) =>
   import(path).then((module) => module.default);
 
-const jsonParse = (path: any, content: any) => JSON.parse(content);
+const jsonParse = (_path: any, content: any) => JSON.parse(content);
 const searchPlaces = [
   "package.json",
   ".contentfulmigrationtoolrc",

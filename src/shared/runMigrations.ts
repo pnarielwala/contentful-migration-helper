@@ -1,4 +1,4 @@
-import { Entry, Environment } from "contentful-management";
+import { Entry } from "contentful-management";
 import { runMigration, RunMigrationConfig } from "contentful-migration";
 import path from "path";
 import { Config } from "./types";
