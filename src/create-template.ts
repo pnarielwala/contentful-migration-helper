@@ -7,7 +7,7 @@ import path from "path";
 import { format, resolveConfig } from "prettier";
 
 import { paramCase } from "param-case";
-import { getVersionOfFile } from "./shared/scripts";
+import { getVersionOfFile } from "shared/helpers";
 
 const MIGRATIONS_DIR = path.resolve(process.cwd(), "src/migrations");
 

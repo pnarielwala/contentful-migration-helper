@@ -1,12 +1,10 @@
 import commander from "commander";
 import { createClient } from "contentful-management";
 
-import {
-  getMigrationsToRun,
-  updateMainAlias,
-  deleteEnvironment,
-} from "./shared/scripts";
 import { Environment } from "contentful-management/dist/typings/entities/environment";
+import { deleteEnvironment } from "shared/deleteEnvironment";
+import { getMigrationsToRun } from "shared/getMigrationsToRun";
+import { updateAlias } from "shared/updateAlias";
 import { Config } from "./shared/types";
 
 const updateAliasCLI = (program: commander.Command, configuration: Config) => {
@@ -55,22 +53,26 @@ const updateAliasCLI = (program: commander.Command, configuration: Config) => {
           const mainEnv = await space.getEnvironment("master");
 
           console.log("\nEnvironment:", environment.sys.id);
-          const { currentVersionString } = await getMigrationsToRun(
+          const { currentVersion } = await getMigrationsToRun({
             environment,
-            "en-US",
-            config
-          );
+            defaultLocale: "en-US",
+            config,
+          });
 
           console.log("\nEnvironment: master");
           const {
-            currentVersionString: currentVersionStringOnMain,
-          } = await getMigrationsToRun(mainEnv, "en-US", config);
+            currentVersion: currentVersionStringOnMain,
+          } = await getMigrationsToRun({
+            environment: mainEnv,
+            defaultLocale: "en-US",
+            config,
+          });
 
-          if (+currentVersionString > +currentVersionStringOnMain) {
+          if (+currentVersion > +currentVersionStringOnMain) {
             console.log(
               `\nEnvironment '${environment.sys.id}' contains new migrations`
             );
-            await updateMainAlias(space, environment.sys.id);
+            await updateAlias(space, environment.sys.id);
 
             const environments = await space.getEnvironments();
 
@@ -97,14 +99,20 @@ const updateAliasCLI = (program: commander.Command, configuration: Config) => {
               const envToDelete = sortedInactiveMainEnvs.shift() as Environment;
               console.log(`\nDeleting '${envToDelete.sys.id}' environment...`);
 
-              await deleteEnvironment(space, envToDelete.sys.id);
+              await deleteEnvironment({
+                space,
+                environmentId: envToDelete.sys.id,
+              });
             }
           } else {
             console.log(
               `warning: Environment '${ENVIRONMENT_INPUT}' does not contain any new migrations. Alias will not be changed.`
             );
             if (removeEnv) {
-              await deleteEnvironment(space, ENVIRONMENT_INPUT);
+              await deleteEnvironment({
+                space,
+                environmentId: ENVIRONMENT_INPUT,
+              });
             }
             return;
           }

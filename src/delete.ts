@@ -3,8 +3,8 @@ import { createClient } from "contentful-management";
 
 import { Environment } from "contentful-management/dist/typings/entities/environment";
 import inquirer from "inquirer";
+import { deleteEnvironment } from "shared/deleteEnvironment";
 
-import { deleteEnvironment } from "./shared/scripts";
 import { Config } from "./shared/types";
 
 const deleteCLI = (program: commander.Command, configuration: Config) => {
@@ -53,7 +53,7 @@ const deleteCLI = (program: commander.Command, configuration: Config) => {
           }
 
           console.log(`Deleting ${ENVIRONMENT_INPUT}...\n`);
-          await deleteEnvironment(space, environment.sys.id);
+          await deleteEnvironment({ space, environmentId: environment.sys.id });
           return;
         } else {
           const environments = await space.getEnvironments();
@@ -78,7 +78,7 @@ const deleteCLI = (program: commander.Command, configuration: Config) => {
             ]);
 
             if (confirmed) {
-              await deleteEnvironment(space, delEnvironment);
+              await deleteEnvironment({ space, environmentId: delEnvironment });
               return;
             } else {
               console.log("\nDeletion aborted!\n");
