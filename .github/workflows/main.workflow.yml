@@ -64,8 +64,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            '**/node_modules'
-            'dist'
+            ~/node_modules
+            ~/dist
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
       - name: Build bundle
         run: yarn build
@@ -81,8 +81,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            '**/node_modules'
-            'dist'
+            ~/node_modules
+            ~/dist
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
       - name: Publish
         env:
