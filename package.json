@@ -72,7 +72,7 @@
     "url": "https://github.com/pnarielwala/contentful_scripts.git"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   },
   "release": {
     "branches": [
