@@ -4,10 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "contentful-migrations": "ts-node ./node_modules/.bin/contentful-migration-tool"
+    "contentful-migrations": "ts-node ./node_modules/.bin/contentful-migration-helper"
   },
   "dependencies": {
-    "contentful-migration-helper": "latest",
+    "contentful-migration-helper": "*",
     "ts-node": "^10.7.0"
   }
 }
