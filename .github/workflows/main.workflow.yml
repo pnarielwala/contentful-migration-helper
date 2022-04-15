@@ -63,10 +63,12 @@ jobs:
           node-version: 'lts/*'
       - uses: actions/cache@v2
         with:
-          path:
-            - '**/node_modules'
-            - '**/dist'
+          path: '**/node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v2
+        with:
+          path: '**/dist'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}-build
       - name: Build bundle
         run: yarn build
   publish:
@@ -80,10 +82,12 @@ jobs:
           node-version: 'lts/*'
       - uses: actions/cache@v2
         with:
-          path:
-            - '**/node_modules'
-            - '**/dist'
+          path: '**/node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v2
+        with:
+          path: '**/dist'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}-build
       - name: Publish
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
