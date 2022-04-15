@@ -32,6 +32,47 @@ module.exports = {
 
 ## Usage/Examples
 
+Create a migrations directory and indicate the relative path to that directory in the configuration file.
+
+In your migrations file, create a javascript file with file name beginning with a number, period, and then some text to describe the migration, i.e:
+`1.create-test-type.js`
+
+```javascript
+// file: path/to/migrations/1.create-test-type.js
+
+export = function (migration) {
+  const testType = migration.createContentType('testType').name('Test Type');
+
+  testType.createField('title').type('Symbol').name('Title').required(true);
+
+  testType.displayField('title');
+};
+```
+
+When the configuration and migration directory is all setup, then run the following to clone the environment and apply the migrations:
+
+```bash
+$ yarn contentful-migration-helper migrate -e your-sandbox-env
+```
+
+This will create a clone of your `master` environment in Contentful and apply the migration files to the newly created `your-sandbox-env` environment.
+
+### Typescript
+
+If the project uses Typescript for the migration files, `ts-node` can be utilized to run the command
+
+```bash
+$ yarn ts-node ./node_modules/.bin/contentful-migration-helper migrate -e your-sandbox-env
+```
+
+### More
+
+See the examples folder for a better reference
+
+## CLI Reference
+
+### Overview
+
 ```bash
 Usage: yarn contentful [command] [options]
 
@@ -45,6 +86,8 @@ Commands:
   help [command]          display help for command
 ```
 
+### Migrate
+
 ```bash
 Usage: yarn contentful migrate [options]
 
@@ -56,6 +99,8 @@ Options:
   -s --space-id <SPACE_ID>        contentful space id
   -h, --help                      display help for command
 ```
+
+### Delete
 
 ```bash
 Usage: yarn contentful delete [options]
@@ -69,6 +114,8 @@ Options:
   -f --force                      delete environment without confirmation prompt
   -h, --help                      display help for command
 ```
+
+### Update Alias
 
 ```bash
 Usage: yarn contentful update-alias [options]
