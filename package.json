@@ -25,6 +25,7 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
+    "chalk": "4.1.2",
     "commander": "5.1.0",
     "contentful-export": "7.12.26",
     "contentful-import": "8.1.17",

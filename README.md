@@ -111,7 +111,7 @@ $ yarn contentful migrate --help
 
 Usage: yarn contentful migrate [options]
 
-Runs migration scripts against an environment cloned from main
+Runs migration scripts against an environment cloned from master
 
 Options:
   -e --environment-id <id>  environment id
@@ -122,16 +122,30 @@ Options:
 
 ### Delete
 
+Deletes any environments (except for master) from the specified workspace
+
+#### Prompts
+
+```shell
+$ yarn contentful delete
+? Select the environment to delete: demo
+? Are you sure you want to delete the environment demo? Yes
+```
+
+#### CLI Arguments
+
+```shell
+$ yarn contentful delete -e demo --skip
+```
+
 ```bash
 Usage: yarn contentful delete [options]
 
 Deletes environments from the specified workspace (will NOT delete the main environment)
 
 Options:
-  -e --environment-id <id>        environment id
-  -mt --management-token <TOKEN>  contentful management token
-  -s --space-id <SPACE_ID>        contentful space id
-  -f --force                      delete environment without confirmation prompt
+  -e --environment-id <id>  environment id
+  --skip                    skips confirmation prompts before deleting the environment (default: false)
   -h, --help                      display help for command
 ```
 

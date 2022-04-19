@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import commander from "commander";
 import { createClient } from "contentful-management";
 
@@ -7,90 +8,89 @@ import { deleteEnvironment } from "./shared/deleteEnvironment";
 
 import { Config } from "./shared/types";
 
-const deleteCLI = (program: commander.Command, configuration: Config) => {
+const deleteCLI = (program: commander.Command, config: Config) => {
   program
     .command("delete")
     .description(
       "Deletes environments from the specified workspace (will NOT delete the main environment)"
     )
     .option("-e --environment-id <id>", "environment id")
-    .requiredOption(
-      "-mt --management-token <TOKEN>",
-      "contentful management token",
-      configuration.managementToken
+    .option(
+      "--skip",
+      "skips confirmation prompts before deleting the environment",
+      false
     )
-    .requiredOption(
-      "-s --space-id <SPACE_ID>",
-      "contentful space id",
-      configuration.spaceId
-    )
-    .action((options) => {
-      const ENVIRONMENT_INPUT = options.environmentId;
-      const CMA_ACCESS_TOKEN = options.managementToken;
-      const SPACE_ID = options.spaceId;
+    .action(async (options: { environmentId: string; skip: boolean }) => {
+      const client = createClient({
+        accessToken: config.managementToken,
+      });
 
-      if (ENVIRONMENT_INPUT == "master") {
+      const space = await client.getSpace(config.spaceId);
+      const environments = await space.getEnvironments();
+
+      let environmentExists = true;
+      try {
+        options.environmentId &&
+          (await space.getEnvironment(options.environmentId));
+      } catch (e) {
+        console.log(
+          chalk.red(`Environment ${options.environmentId} does not exist`)
+        );
+        environmentExists = false;
+      }
+
+      if (options.environmentId === "master") {
+        console.log(
+          chalk.red(
+            `Environment "${options.environmentId}" is the main environment and cannot be deleted`
+          )
+        );
+        environmentExists = false;
+      }
+
+      const masterEnvironment = environments.items.find(
+        (env: Environment) => env.sys.id === "master"
+      );
+      const masterAliasId = masterEnvironment?.sys.aliasedEnvironment?.sys.id;
+      const environmentsToSelect = environments.items
+        .filter(
+          (env: Environment) =>
+            env.sys.id !== "master" && env.sys.id !== masterAliasId
+        )
+        .map((env: Environment) => env.sys.id);
+
+      const { environmentId } =
+        environmentExists && options.environmentId
+          ? options
+          : await inquirer.prompt<{
+              environmentId: string;
+            }>({
+              type: "list",
+              name: "environmentId",
+              message: "Select the environment to delete",
+              choices: environmentsToSelect,
+            });
+
+      const { confirmed } = options.skip
+        ? { confirmed: options.skip }
+        : await inquirer.prompt<{ confirmed: boolean }>({
+            type: "confirm",
+            name: "confirmed",
+            message: `Are you sure you want to delete the environment ${environmentId}?`,
+          });
+
+      if (environmentId === "master") {
         console.error("forbidden: cannot delete environment 'master'");
         process.exit(1);
       }
 
-      const client = createClient({
-        accessToken: CMA_ACCESS_TOKEN,
-      });
-      const deleteEnv = async () => {
-        let environment: Environment | undefined;
-
-        const space = await client.getSpace(SPACE_ID);
-        if (ENVIRONMENT_INPUT) {
-          try {
-            space.getEnvironments();
-            environment = await space.getEnvironment(ENVIRONMENT_INPUT);
-          } catch (e) {
-            console.error(
-              `error: Environment '${ENVIRONMENT_INPUT}' does not exist on space '${space.name}'`
-            );
-            process.exit(1);
-          }
-
-          console.log(`Deleting ${ENVIRONMENT_INPUT}...\n`);
-          await deleteEnvironment({ space, environmentId: environment.sys.id });
-          return;
-        } else {
-          const environments = await space.getEnvironments();
-
-          const environmentNames = environments.items
-            .map((env) => env.name)
-            .filter((envName) => !envName.includes("main-", 0));
-
-          try {
-            const { delEnvironment, confirmed } = await inquirer.prompt([
-              {
-                type: "list",
-                name: "delEnvironment",
-                message: `Which environment do you want to delete?`,
-                choices: environmentNames,
-              },
-              {
-                type: "confirm",
-                name: "confirmed",
-                message: `Are you sure?`,
-              },
-            ]);
-
-            if (confirmed) {
-              await deleteEnvironment({ space, environmentId: delEnvironment });
-              return;
-            } else {
-              console.log("\nDeletion aborted!\n");
-              process.exit(0);
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      };
-
-      deleteEnv();
+      if (confirmed) {
+        await deleteEnvironment({ space, environmentId });
+        return;
+      } else {
+        console.log("\nDeletion aborted!\n");
+        process.exit(0);
+      }
     });
 };
 
