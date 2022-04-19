@@ -1,7 +1,7 @@
 import commander from "commander";
 import { createClient } from "contentful-management";
 
-import { Environment } from "contentful-management/dist/typings/entities/environment";
+import inquirer from "inquirer";
 import { cloneEnvironment } from "./shared/cloneEnvironment";
 import { configureEnvironment } from "./shared/configureEnvironment";
 import { getMigrationsToRun } from "./shared/getMigrationsToRun";
@@ -9,55 +9,55 @@ import { runMigrations } from "./shared/runMigrations";
 
 import { Config } from "./shared/types";
 
-const migrationCLI = (program: commander.Command, configuration: Config) => {
+const migrationCLI = (program: commander.Command, config: Config) => {
   program
     .command("migrate")
     .description(
       "Runs migration scripts against an environment cloned from main"
     )
-    .requiredOption("-e --environment-id <id>", "environment id")
-    .requiredOption(
-      "-mt --management-token <TOKEN>",
-      "contentful management token",
-      configuration.managementToken
-    )
-    .requiredOption(
-      "-s --space-id <SPACE_ID>",
-      "contentful space id",
-      configuration.spaceId
-    )
+    .option("-e --environment-id <id>", "environment id")
     .option(
       "--skip",
       "skips confirmation prompts before executing the migration scripts",
       false
     )
-    .action((options) => {
-      const ENVIRONMENT_INPUT = options.environmentId;
-      const skipConfirmation = options.skip;
-
-      const config: Config = {
-        spaceId: options.spaceId,
-        managementToken: options.managementToken,
-        migrationDirectory: configuration.migrationDirectory,
-      };
-
+    .action((options: { environmentId: string; skip: boolean }) => {
       const client = createClient({
         accessToken: config.managementToken,
       });
 
       const migrate = async () => {
-        let environment: Environment | undefined;
-
         const space = await client.getSpace(config.spaceId);
-        console.group("\nRunning with the following configuration:");
-        console.log(`ENVIRONMENT_INPUT: ${ENVIRONMENT_INPUT}`);
-        console.log(`CMA_ACCESS_TOKEN: ${config.managementToken}`);
-        console.log(`SPACE_ID: ${config.spaceId}`);
-        console.groupEnd();
 
-        environment = await cloneEnvironment({
+        const { environmentId } = options.environmentId
+          ? options
+          : await inquirer.prompt<{
+              environmentId: string;
+            }>({
+              type: "input",
+              name: "environmentId",
+              message: "Enter the environment id",
+              validate: (input: string) => {
+                if (input.length === 0) {
+                  return "Environment id is required";
+                }
+                return true;
+              },
+            });
+
+        const { skip: skipConfirmation } = options.skip
+          ? options
+          : await inquirer.prompt<{
+              skip: boolean;
+            }>({
+              type: "confirm",
+              name: "skip",
+              message: "Do you want to skip migration confirmation prompts?",
+            });
+
+        const environment = await cloneEnvironment({
           space,
-          environmentId: ENVIRONMENT_INPUT,
+          environmentId: environmentId,
         });
 
         if (!environment) return;
