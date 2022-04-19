@@ -1,5 +1,7 @@
 # Contentful Migration Helper
 
+[![Main workflow](https://github.com/pnarielwala/contentful_scripts/actions/workflows/main.workflow.yml/badge.svg)](https://github.com/pnarielwala/contentful_scripts/actions/workflows/main.workflow.yml)
+
 This tool helps developers use Contentful like a database when running migrations to add/edit content types and fields.
 
 ## Installation
