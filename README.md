@@ -1,6 +1,6 @@
 # Contentful Migration Helper
 
-[![Main workflow](https://github.com/pnarielwala/contentful_scripts/actions/workflows/main.workflow.yml/badge.svg)](https://github.com/pnarielwala/contentful_scripts/actions/workflows/main.workflow.yml)
+[![CI/CD](https://github.com/pnarielwala/contentful_scripts/actions/workflows/main.workflow.yml/badge.svg)](https://github.com/pnarielwala/contentful_scripts/actions/workflows/main.workflow.yml)[![npm version](https://badge.fury.io/js/contentful-migration-helper.svg)](https://badge.fury.io/js/contentful-migration-helper)
 
 This tool helps developers use Contentful like a database when running migrations to add/edit content types and fields.
 
