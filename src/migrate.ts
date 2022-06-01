@@ -29,31 +29,33 @@ const migrationCLI = (program: commander.Command, config: Config) => {
       const migrate = async () => {
         const space = await client.getSpace(config.spaceId);
 
-        const { environmentId } = options.environmentId
-          ? options
-          : await inquirer.prompt<{
-              environmentId: string;
-            }>({
-              type: "input",
-              name: "environmentId",
-              message: "Enter the environment id",
-              validate: (input: string) => {
-                if (input.length === 0) {
-                  return "Environment id is required";
-                }
-                return true;
-              },
-            });
+        const { environmentId } =
+          options.environmentId !== undefined
+            ? options
+            : await inquirer.prompt<{
+                environmentId: string;
+              }>({
+                type: "input",
+                name: "environmentId",
+                message: "Enter the environment id",
+                validate: (input: string) => {
+                  if (input.length === 0) {
+                    return "Environment id is required";
+                  }
+                  return true;
+                },
+              });
 
-        const { skip: skipConfirmation } = options.skip
-          ? options
-          : await inquirer.prompt<{
-              skip: boolean;
-            }>({
-              type: "confirm",
-              name: "skip",
-              message: "Do you want to skip migration confirmation prompts?",
-            });
+        const { skip: skipConfirmation } =
+          options.skip !== undefined
+            ? options
+            : await inquirer.prompt<{
+                skip: boolean;
+              }>({
+                type: "confirm",
+                name: "skip",
+                message: "Do you want to skip migration confirmation prompts?",
+              });
 
         const environment = await cloneEnvironment({
           space,
